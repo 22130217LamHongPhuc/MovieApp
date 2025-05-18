@@ -55,7 +55,68 @@ fun TypeMovieScreen(navController: NavController,viewmodel: ViewmodelCategory = 
         }
     }
 
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
 
+
+        item {
+            Text(
+                text = "Lịch sử tìm kiếm",
+                style = MaterialTheme.typography.titleMedium.copy(color = Color(0xffE4EFE7))
+            )
+        }
+
+        item {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.height(200.dp) // Đặt chiều cao cố định
+            ) {
+                items(
+                    state.value.history.size,
+                    key = { index -> state.value.history.get(index).hashCode() }) { index ->
+                    CategoryType(state.value.history[index], "", index == 0) { search ->
+                    }
+                }
+            }
+        }
+
+        item {
+            Text(
+                text = "Thể Loại",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+
+        item {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.height(200.dp) // Đặt chiều cao cố định
+            ) {
+                items(
+                    state.value.categories.size,
+                    key = { index -> state.value.categories.get(index).hashCode() }) { index ->
+                    CategoryType(
+                        state.value.categories[index]?.name ?: "",
+                        state.value.categories[index]?.slug ?: "",
+                        index == 0
+                    ) { search ->
+                        moveToTypeMovie("category", search)
+                    }
+                }
+            }
+        }
 
 
 @Composable
