@@ -135,7 +135,7 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
     }
 
 
-    
+
     val statePager = rememberPagerState(0) {
         4
     }
@@ -218,4 +218,105 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
 
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Home(viewModel: HomeViewModel = hiltViewModel(),navController: NavController,onChange: (String) -> Unit){
+
+    val listImg = remember {
+        listOf(R.drawable.img_2, R.drawable.img_3, R.drawable.img_4, R.drawable.img_5)
+    }
+
+    val uiState by viewModel.stateHome.collectAsState()
+    val isLoading = uiState.isLoading
+    val errorMessage = uiState.errorMessage
+    val movies by remember { derivedStateOf { uiState } }
+
+    if(isLoading){
+        // 4.1.4 Hiển thị giao diện trạng thái đang loading
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(30.dp),
+                strokeWidth = 3.dp,
+                color = Color.Red
+            )
+        }
+    }
+    LazyColumn(
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize(),
+        content = {
+            stickyHeader {
+                TopAppBar(onChange = onChange,
+                    moveToVoice = {
+                        navController.navigate("voice")
+                    }, onSearchMovie =  { query ->
+                        // 1.6 chuyen sang man hinh Search_MovieScreen
+                        navController.navigate("search_movie/$query") })
+            }
+
+            item(key = "banner1") {
+                MovieBanner(imgList = listImg,Modifier)
+            }
+
+            when {
+                !errorMessage.isNullOrEmpty() -> item { }
+                else -> {
+
+                    item(key = "movie_list") {
+
+                        // 4.1.9 Hiển thị  lên giao diện danh sách phim
+                        MovieHomes(
+                            state = movies,
+                            modifier = Modifier,
+                            navController = navController
+                        )
+                    }
+
+                }
+            }
+        })
+
+}
+
+@Composable
+fun BoxRefresh() {
+    val widthScreen = (LocalConfiguration.current.screenWidthDp / 3 - 4).dp
+    val heightScreen = (LocalConfiguration.current.screenHeightDp / 5).dp
+
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        modifier = Modifier
+            .padding(top = 15.dp)
+            .fillMaxWidth()
+            .height(calculateGridHeight(2)),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(8.dp)
+
+    ) {
+        items(count = 6, key = { index -> index.hashCode() }) { index ->
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(heightScreen)
+                .background(color = Color.Transparent, shape = RoundedCornerShape(25.dp))
+                .clip(shape = RoundedCornerShape(25.dp))
+                .placeholder(
+                    visible = true,
+                    highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White), // Shimmer sáng
+                    color = Color.Gray // Màu placeholder sáng hơn trên nền đen
+                )
+            )
+        }
+    }
+
+
+
 }
