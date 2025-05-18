@@ -58,7 +58,7 @@ class SiginViewmodel @Inject constructor(val auth:EmailAuthRepo) : ViewModel(){
     suspend fun siginWithEmail(email: String, pass: String) {
 
         try {
-            // 4.2.7 Hệ thống chỉnh trạng thái sang đang loading
+            // 4.2.7 Hệ thống chỉnh _stateSignin sang trạng thái  đang loading
 
             _stateSignin.value = UiState.Loading
             Log.d("SignIn", " Đang gọi handleSignInResult...")

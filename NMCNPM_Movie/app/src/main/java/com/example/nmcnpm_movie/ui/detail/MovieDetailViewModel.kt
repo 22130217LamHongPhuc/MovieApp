@@ -39,7 +39,7 @@ class MovieDetailViewModel @Inject constructor(val repository: MovieDetailReposi
     fun getMovieDetailBySlug(slug:String,idMovie: String,idUser: String?){
 
         viewModelScope.launch {
-            // 4.1.13 hệ thống chuyển sang  trạng thái sang đang loading
+            // 4.1.13 hệ thống chuyển _cmtMovieDetail sang  trạng thái  đang loading
 
             _stateMovieDetail.value =  UiState.Loading
 
@@ -51,7 +51,7 @@ class MovieDetailViewModel @Inject constructor(val repository: MovieDetailReposi
                 // 4.1.17 Hệ thống nhận dữ liệu thông tin chi tiết phim từ Api trả về
 
                 if(movieDetail !=null){
-                    // 4.1.18 Hệ thống cập nhập thông tin phim chi tiết  từ data từ api trả về
+                    // 4.1.18 Hệ thống cập nhập thông tin phim chi tiết  từ data từ api trả về cho _stateMovieDetail
                     Log.d("detail","ss")
                     _stateMovieDetail.value = UiState.Success(data = movieDetail )
                 }else{
@@ -67,7 +67,7 @@ class MovieDetailViewModel @Inject constructor(val repository: MovieDetailReposi
                     val result = repository_movieDetailMore.isFavoriteMovie(idUser,idMovie)
                     // 4.1.22 Hệ thống nhận dữ liệu thông tin yêu thích Api trả về của Firebase
 
-                    // 4.1.23 Hệ thống cập nhập thông tin yêu thích phim  từ data từ Firebase trả về
+                    // 4.1.23 Hệ thống cập nhập thông tin yêu thích phim  từ data từ Firebase trả về cho _favoriteMovieDetail
                     _favoriteMovieDetail.value = result
                 }
             }
@@ -91,7 +91,7 @@ class MovieDetailViewModel @Inject constructor(val repository: MovieDetailReposi
                 result ->
             // 4.1.40 Hệ thống nhận kết quả lưu trữ bình luận của Api trả về của Firebase
 
-            // 4.1.41 Hệ thống cập nhật danh sách bình luận bao gôm bình luận mới nhất
+            // 4.1.41 Hệ thống cập nhật danh sách bình luận bao gôm bình luận mới nhất cho _cmtList
 
             result.onSuccess {
                 _cmtList.update {
@@ -116,7 +116,7 @@ class MovieDetailViewModel @Inject constructor(val repository: MovieDetailReposi
         repository_movieDetailMore.getCommentsRealtime(idMovie){
             // 4.1.30 Hệ thống nhận dữ liệu danh sách bình luận Api trả về của Firebase
                 list ->
-            // 4.1.31 Hệ thống cập nhập thông tin danh sách bình luận từ data từ Firebase trả về
+            // 4.1.31 Hệ thống cập nhập thông tin danh sách bình luận từ data từ Firebase trả về cho _cmtList
             _cmtList.update { current ->
 
                 (current + list) as MutableList<Comment>

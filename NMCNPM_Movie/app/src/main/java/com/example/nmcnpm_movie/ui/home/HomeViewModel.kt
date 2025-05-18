@@ -29,7 +29,7 @@ class HomeViewModel @Inject constructor(val repository: MovieRepository) :ViewMo
 
     fun getDataHomeMovie(){
         viewModelScope.launch {
-            // 4.1.3 hệ thống chỉnh trạng thái sang đang loading
+            // 4.1.3 hệ thống chuyển _stateHome sang trạng thái  đang loading
             _stateHome.update { it.copy(isLoading = true) }
 
             try {
@@ -52,7 +52,7 @@ class HomeViewModel @Inject constructor(val repository: MovieRepository) :ViewMo
 
 
 
-                    // 4.1.8 Hệ thống cập nhập danh sách các phim từ data từ api trả về
+                    // 4.1.8 Hệ thống cập nhập danh sách các phim từ data từ api trả về cho _stateHome
 
                     _stateHome.update {
 
