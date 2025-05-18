@@ -513,3 +513,162 @@ fun MovieList(latestMovies: List<Movie>, label: String, navController: NavContro
 
 }
 
+
+@Composable
+fun TopAppBar(
+    onChange: (String) -> Unit,
+    onSearchMovie: (String) -> Unit,
+    moveToVoice: () -> Unit
+) {
+
+    var searchText by remember {
+        mutableStateOf("")
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color.Black)
+            .padding(end = 10.dp)
+    ) {
+
+        Spacer(modifier = Modifier.height(10.dp))
+        Row {
+            Image(
+                painter = painterResource(id = R.drawable.img),
+                contentDescription = "logo",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(45.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            SearchTopBar(searchText, onSearchMovie = onSearchMovie, onChange = { value ->
+                searchText = value
+            }, moveToVoice = moveToVoice)
+
+        }
+
+
+
+
+        MovieTab(K.compileTypeItems, onChange = onChange)
+
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+fun SearchTopBar(
+    search: String,
+    onChange: (String) -> Unit,
+    onSearchMovie: (String) -> Unit,
+    moveToVoice: () -> Unit
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+
+    //1.3 khoi tao TextField
+    //1.4 nhap thong tin tim kiem phim
+
+    TextField(
+        value = search,
+        onValueChange = onChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp)
+            .clip(RoundedCornerShape(25.dp)),
+        textStyle = TextStyle.Default.copy(color = Color(0xFFBFCECC)),
+
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = Color(0xff264653),
+            focusedTextColor = Color(0xFFBFCECC),
+            unfocusedTextColor = Color(0xFFBFCECC)
+        ),
+        placeholder = {
+            Text(
+                text = "Nhập phim cần tìm",
+                style = TextStyle.Default.copy(color = Color(0xFFBFCECC))
+            )
+        },
+        trailingIcon = {
+            Icon(imageVector = Icons.Default.Mic,
+                contentDescription = "search",
+                tint = Color.White,
+                modifier = Modifier.clickable {
+                    moveToVoice()
+                })
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = {
+
+                if (search.trim().isNotEmpty()) {
+                    onSearchMovie(search.trim())
+                }
+                keyboardController.let {
+                    it?.hide()
+                }
+
+                onChange("")
+
+
+            }
+        ),
+        singleLine = true // Đảm bảo nhập 1 dòng, tránh tự động gọi hàm
+
+    )
+
+
+}
+
+
+@Composable
+fun MovieTab(
+    tabs: List<CompileTypeItem>,
+    modifier: Modifier = Modifier,
+    onChange: (String) -> Unit
+) {
+
+    var selectedTabIndex by remember { mutableStateOf(0) }
+
+
+    ScrollableTabRow(
+        selectedTabIndex = selectedTabIndex,
+        modifier = modifier.fillMaxWidth(),
+        containerColor = Color.Black,
+
+        edgePadding = 2.dp,
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                    .height(0.dp),
+                color = Color.Green
+            )
+        }
+    ) {
+        tabs.forEachIndexed { index, item ->
+            Tab(
+                selected = selectedTabIndex == index,
+                onClick = {
+                    selectedTabIndex = index
+                    onChange(item.slug)
+                },
+                text = {
+                    Text(
+                        item.title,
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
+                        )
+                    )
+                },
+                selectedContentColor = Color.White,
+                unselectedContentColor = Color(0xFF2a9d8f)
+            )
+        }
+
+    }
+
+}
