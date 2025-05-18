@@ -152,3 +152,157 @@ fun SiginScreen(viewmodel: SiginViewmodel = hiltViewModel(), activity: Component
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FormSignin(modifier: Modifier,signinWithEmail:(String,String) -> Unit,signinWithFacebook:() -> Unit,signin:() -> Unit) {
+    var field_email by remember {
+        mutableStateOf("")
+    }
+
+    var field_pass by remember {
+        mutableStateOf("")
+    }
+
+    Column(modifier = modifier
+        .background(
+            color = Color(0xFFAFD1B6),
+            shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
+        )
+        .padding(25.dp),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "Xin chào",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = Color(0xFFEDF1EA),
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif
+            )
+        )
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Text(
+            text = "Hãy nhập thông tin đăng nhập của bạn",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = Color.White,
+                fontFamily = FontFamily.SansSerif
+            )
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Text(text = "Email",modifier =Modifier.fillMaxWidth(), style = MaterialTheme.typography.bodyMedium.copy(color = Color.White))
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        // 4.2.5 Người dùng thực hiện nhập thông tin tài khoản  để thực hiện đăng nhập
+
+        OutlinedTextField(value = field_email,modifier= Modifier
+            .fillMaxWidth()
+            .height(50.dp), onValueChange = {
+            field_email = it
+        }, placeholder = {
+            Text(text = "Nhập email của bạn",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFFD5C4C4)))
+        },
+            trailingIcon = {
+                Icon(imageVector = Icons.Default.Email, contentDescription ="icon" )
+            })
+
+
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Text(text = "Mật khẩu", modifier =Modifier.fillMaxWidth(),style = MaterialTheme.typography.bodyMedium.copy(color = Color.White))
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        OutlinedTextField(value = field_pass,modifier= Modifier
+            .fillMaxWidth()
+            .height(50.dp), onValueChange = {
+            field_pass = it
+        }, placeholder = {
+            Text(text = "Nhập mật khẩu của bạn",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFFD5C4C4)))
+        },
+            trailingIcon = {
+                Icon(imageVector = Icons.Default.Password, contentDescription ="icon" )
+            })
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Text(text = "Quên mật khẩu ",
+            modifier =Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodyMedium.
+            copy(color = Color.White, fontWeight = FontWeight.Bold))
+
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        Button(onClick = {
+            signinWithEmail(field_email,field_pass)
+        },
+            modifier= Modifier
+                .width((LocalConfiguration.current.screenWidthDp*3/4).dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xffC68EFD),
+                contentColor = Color.White
+            )) {
+            Text(text = "Đăng nhập",
+                modifier = Modifier.padding(10.dp),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color(0xFFF7EDED), fontWeight = FontWeight.Bold))
+        }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        Row(modifier= Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center){
+
+
+            Image(painter = painterResource(id = R.drawable.img_7), contentDescription ="",modifier=Modifier.size(40.dp).clickable(onClick = signin) )
+            Spacer(modifier = Modifier.width(25.dp))
+            Image(painter = painterResource(id = R.drawable.twitter), contentDescription ="" ,modifier= Modifier.size(40.dp).clickable (onClick = signinWithFacebook))
+            Spacer(modifier = Modifier.width(25.dp))
+            Image(painter = painterResource(id = R.drawable.github), contentDescription ="" ,modifier= Modifier.size(40.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Logo(modifier: Modifier) {
+
+
+    Column(modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(painter = painterResource(id = R.drawable.baseline_cruelty_free_24),
+            contentDescription = "rabbit",
+            modifier = Modifier.size(45.dp),tint = Color.Green)
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = "Go Movie",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif
+            )
+        )
+    }
+}
+
+@Composable
+fun Background(modifier: Modifier) {
+    Box(modifier = modifier){
+        Image(painter = painterResource(id = R.drawable.img_6), contentDescription = "logo",
+            modifier = Modifier.fillMaxSize() ,
+            contentScale = ContentScale.Crop)
+    }
+}
+
+@Preview
+@Composable
+fun test() {
+
+}
