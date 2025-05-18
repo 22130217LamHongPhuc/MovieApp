@@ -28,7 +28,26 @@ class TypeMovieViewmodel @Inject constructor(val repository: MovieTypeRepository
     private val _type = MutableStateFlow("")
     private val _slug = MutableStateFlow("")
 
+    val searchMoviePagingFlow = _slug.flatMapLatest { query ->
+        Log.d("search",query+"1")
+        if (query.isBlank()) {
+            flowOf(PagingData.empty())
+        } else {
+            if (_type.value.equals("category"))
+                repository.getMoviesCategorySearchPager(query).cachedIn(viewModelScope) // ✅ Thêm dòng này
 
+            else repository.getMoviesCountrySearchPager(query).cachedIn(viewModelScope) // ✅ Thêm dòng này
+        }
+    }
+        .stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
+
+
+    fun setQuery(type:String,slug:String){
+        if(_slug.value!=slug){
+            _slug.value =slug
+            _type.value=type
+        }
+    }
 
 
 }
