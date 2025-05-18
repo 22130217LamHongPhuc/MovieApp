@@ -118,6 +118,32 @@ fun TypeMovieScreen(navController: NavController,viewmodel: ViewmodelCategory = 
             }
         }
 
+        item {
+            Text(
+                text = "Quốc gia",
+                style = MaterialTheme.typography.titleMedium.copy(color = Color.White, fontWeight = FontWeight.Bold)
+            )
+        }
+
+        item {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.height(200.dp) // Đặt chiều cao cố định
+            ) {
+                items(state.value.countries.size, key = { index -> state.value.countries.get(index).hashCode() }) { index ->
+
+                    Log.d("loadd",index.toString())
+                    CategoryType(state.value.countries[index]?.name ?: "",state.value.countries[index]?.slug ?: "", index == 0){
+                            search -> moveToTypeMovie("country",search)
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun CategoryType(category: String,slug:String,isSeleted:Boolean=false,onSearchByType :(String) -> Unit) {
