@@ -413,3 +413,484 @@ fun bottomViewDetail(modifier: Modifier,clickComment :() -> Unit,clickFavorite: 
 
     }
 }
+
+@Composable
+fun DetailMovieView(movie: MovieDetail,onClickChapterMovie :(String)->Unit) {
+
+    var isLoadInfor by remember {
+        mutableStateOf(true)
+    }
+
+    ConstraintLayout(modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.DarkGray)
+        .padding(bottom = 15.dp)) {
+        val (bgRef, Fg, titleRef, movieInforRef,tabRef,chapterRef) = createRefs()
+        val barrier = createGuidelineFromTop(0.08f)
+
+        BackGroundPoster(
+            thumbnail = movie.thumbUrl,
+            modifier = Modifier.constrainAs(bgRef) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        ForegroundPoster(
+            poster = movie.poster,
+            modifier = Modifier.constrainAs(Fg) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(barrier)
+
+            }
+        )
+
+
+
+        Text(
+            text = movie.name,
+            modifier = Modifier
+                .padding(horizontal = 5.dp)
+                .constrainAs(titleRef) {
+                    start.linkTo(Fg.start)
+                    end.linkTo(Fg.end)
+                    bottom.linkTo(Fg.bottom, margin = 10.dp)
+                    width = Dimension.fillToConstraints
+                },
+            fontSize = 20.sp,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.SansSerif
+        )
+
+        val tabs = listOf("Thông tin","Tập phim")
+
+
+        MovieTabDetail(tabs, modifier = Modifier.constrainAs(tabRef){
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            top.linkTo(Fg.bottom)
+            width = Dimension.fillToConstraints
+        }){
+                bool ->
+            isLoadInfor = bool
+        }
+
+        if(isLoadInfor){
+            LoadInforMovieDetail(movie = movie, modifier = Modifier
+                .constrainAs(movieInforRef) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(tabRef.bottom, margin = 10.dp)
+                    bottom.linkTo(parent.bottom)
+
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                })
+        }else{
+            LoadEposideMovieDetail(movie,modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(chapterRef) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(tabRef.bottom, margin = 10.dp)
+                    bottom.linkTo(parent.bottom)
+
+                    width = Dimension.fillToConstraints
+
+                    height = Dimension.fillToConstraints
+                }){
+                    link -> onClickChapterMovie(link)
+            }
+        }
+    }
+
+}
+
+
+
+@Composable
+fun ForegroundPoster(poster: String, modifier: Modifier) {
+
+
+    val width = LocalConfiguration.current.screenWidthDp / 2
+    val height = LocalConfiguration.current.screenHeightDp / 4
+
+    val targetWidthPx = with(LocalDensity.current) {
+        width.dp.toPx()
+    }.toInt()
+
+
+    val targetHeightPx = (targetWidthPx * 3 / 2).toInt()
+    Box(
+        modifier = modifier
+            .width(width.dp)
+            .height(height.dp)
+            .clip(RoundedCornerShape(16.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Image(
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current)
+                    .data(poster)
+                    .size(targetWidthPx,targetHeightPx)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .crossfade(true)
+                    .build()
+
+            ), contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.Transparent,
+                            Color(0xB91A1B1B),
+                        )
+                    ), shape = RoundedCornerShape(16.dp)
+                )
+        )
+    }
+}
+
+
+@Composable
+fun BackGroundPoster(thumbnail: String, modifier: Modifier) {
+    val height = LocalConfiguration.current.screenHeightDp / 3
+    val width = LocalConfiguration.current.screenWidthDp
+
+    val targetWidthPx = with(LocalDensity.current) {
+        width.dp.toPx()
+    }.toInt()
+
+    val targetHeightPx = (targetWidthPx * 3 / 2).toInt()
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height.dp)
+            .background(color = Color.Transparent),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current)
+                    .data(thumbnail)
+                    .size(targetWidthPx,targetHeightPx)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .crossfade(true)
+                    .build()
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height.dp)
+                .alpha(0.6f),
+            contentScale = ContentScale.Crop
+        )
+
+    }
+
+}
+
+@Composable
+fun Rating(movie: MovieDetail, modifier: Modifier) {
+    Row(
+        modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = modifier.width(25.dp))
+        Icon(imageVector = Icons.Default.Schedule, contentDescription = "", tint = Color.White)
+        Text(
+            text = movie.episode_total+" tập",
+            modifier.padding(start = 6.dp),
+            color = Color.White
+        )
+        Spacer(modifier = modifier.width(25.dp))
+        Icon(
+            imageVector = Icons.Default.Timelapse,
+            contentDescription = "",
+            tint = Color.White
+        )
+        Text(
+            text = movie.timeMovie,
+            modifier.padding(start = 6.dp),
+            color = Color.White
+        )
+        Spacer(modifier = modifier.width(25.dp))
+        Icon(imageVector = Icons.Filled.DateRange, contentDescription = "", tint = Color.White)
+        Text(
+            text = movie.yearProduct.toString(),
+            modifier.padding(start = 6.dp),
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun TextBuilder(icon: ImageVector, title: String, bodyText: String) {
+    Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "Person",
+            tint = Color.White
+        )
+        Text(
+            text = title,
+            Modifier.padding(start = 10.dp),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+    Text(text = bodyText, color = Color.White, modifier = Modifier.padding(horizontal = 10.dp))
+}
+
+
+@Composable
+fun MovieTabDetail(tabs: List<String>, modifier: Modifier = Modifier,isLoadInfor: (Boolean) -> Unit) {
+    var selectedTabIndex by remember {
+        mutableStateOf(0)
+    }
+
+    LaunchedEffect(key1 = selectedTabIndex){
+        if(selectedTabIndex == 0){
+            isLoadInfor(true)
+        }else{
+            isLoadInfor(false)
+        }
+    }
+
+    androidx.compose.material3.TabRow(
+        selectedTabIndex = selectedTabIndex,
+        modifier = modifier.fillMaxWidth(),
+        containerColor  = Color(0xFF302E2E),
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                    .height(2.dp),
+                color = Color.Red
+            )
+        }) {
+        tabs.forEachIndexed { index, title ->
+            Tab(
+                selected = selectedTabIndex == index,
+                onClick = { selectedTabIndex = index },
+                text = {
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
+                        ))
+                },
+                selectedContentColor = Color.White,
+                unselectedContentColor = Color(0xFF999292),
+
+                )
+        }
+
+    }
+
+
+}
+
+
+@Composable
+fun LoadInforMovieDetail(movie: MovieDetail,modifier: Modifier){
+
+    LazyColumn(
+        modifier =modifier,
+    ) {
+        item {
+
+            Rating(movie = movie, modifier = Modifier)
+        }
+        item{
+            TextBuilder(
+                icon = Icons.Filled.Info,
+                title = "Mô tả:",
+                bodyText = movie.description
+            )
+        }
+
+
+        item{
+            TextBuilder(
+                icon = Icons.Filled.Person,
+                title = "Diễn viên:",
+                bodyText = movie.actors.joinToString(", ")
+            )
+        }
+
+        item{
+            TextBuilder(
+                icon = Icons.Filled.RecentActors,
+                title = "Đạo diễn:",
+                bodyText = movie.director.joinToString(", ")
+            )
+        }
+
+        item{
+            TextBuilder(
+                icon = Icons.Filled.Category,
+                title = "Thể loại:",
+                bodyText = movie.categorys.map { item -> item.name }.joinToString(", ")
+            )
+        }
+
+        item{
+            TextBuilder(
+                icon = Icons.Filled.ViewHeadline,
+                title = "Quốc gia:",
+                bodyText = movie.country.map { item -> item.name }.joinToString(", ")
+            )
+        }
+
+
+    }
+
+}
+
+
+@Composable
+fun LoadEposideMovieDetail(movie: MovieDetail, modifier: Modifier,onClickChapterMovie :(String) -> Unit) {
+    Column(
+        modifier = modifier
+            .fillMaxSize() // Giới hạn chiều cao
+    ) {
+        EpisodeView(episode = movie.episodes[0]){
+                link -> onClickChapterMovie(link)
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+
+
+        if(movie.episodes.size>1){
+            EpisodeView(episode = movie.episodes[1]){
+                    link -> onClickChapterMovie(link)
+            }
+        }
+    }
+}
+
+
+@Composable
+fun EpisodeView(episode: Episode,onClickChapterMovie :(String) -> Unit) {
+    Column() {
+
+        Text(text = episode?.serverName ?: "",
+            style = MaterialTheme.typography.bodyMedium.
+            copy(color = Color.White, fontFamily = FontFamily.SansSerif))
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(6),
+            modifier = Modifier.wrapContentHeight(),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+
+            ) {
+
+            episode.serverData?.let {
+                items(it){
+                        item -> EpisodeViewItem(item){
+                        link -> onClickChapterMovie(link)
+                }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EpisodeViewItem(item: ServerData?,onClickChapterMovie :(String) -> Unit) {
+    // 1.11 goi phuong thuc onClickChapterMovie()
+
+    Box(modifier = Modifier
+        .size(30.dp)
+        .background(color = Color.Blue, shape = RoundedCornerShape(5.dp))
+        .clickable {
+            onClickChapterMovie(item?.linkM3u8 ?: "")
+        },
+        contentAlignment = Alignment.Center
+    ){
+        var number:String?
+
+        try{
+            number  = item?.name?.substring(item?.name?.lastIndexOf(" ") ?: 0)?.trim()
+
+        }catch (e:Exception){
+            number = item?.name
+        }
+
+        Text(text = number.toString(),style = TextStyle.Default.copy(color = Color.White), textAlign = TextAlign.Center)
+    }
+}
+
+
+@Composable
+fun CommentItemView(comment: Comment){
+    ConstraintLayout(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()) {
+
+
+        val (imgRef,nameRef,contentRef,dateRef) = createRefs()
+        Image(painter = painterResource(id = R.drawable.img_2),
+            contentDescription = null, modifier = Modifier
+                .size(45.dp)
+                .clip(CircleShape)
+                .constrainAs(imgRef)
+                {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                },
+            contentScale = ContentScale.Crop)
+
+        Text(text = comment.userName,style = MaterialTheme.typography.bodyMedium.copy(color = Color(
+            0xFFC8CECA
+        )
+        ),
+            modifier = Modifier.constrainAs(nameRef){
+                start.linkTo(imgRef.end, margin = 10.dp)
+                end.linkTo(parent.end, margin = 10.dp)
+                top.linkTo(imgRef.top)
+                width = Dimension.fillToConstraints
+            })
+
+
+        Text(text = comment.content,style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xffFDFAF6)),
+            modifier = Modifier.constrainAs(contentRef){
+                start.linkTo(nameRef.start)
+                end.linkTo(nameRef.end)
+                top.linkTo(nameRef.bottom,margin = 5.dp)
+                width = Dimension.fillToConstraints
+            })
+        val dateFormat = comment.formatDayCmt()
+
+        Text(text = dateFormat,style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFC8CECA)),
+            modifier = Modifier.constrainAs(dateRef){
+                start.linkTo(nameRef.start)
+                top.linkTo(contentRef.bottom,margin = 5.dp)
+            })
+    }
+}
