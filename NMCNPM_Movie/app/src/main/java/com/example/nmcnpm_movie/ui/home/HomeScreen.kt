@@ -672,3 +672,112 @@ fun MovieTab(
     }
 
 }
+
+@SuppressLint("SuspiciousIndentation")
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MovieBanner(imgList: List<Int>, modifier: Modifier) {
+    val pagerStateRm = rememberPagerState { imgList.size }
+
+    val heightScreen = LocalConfiguration.current.screenHeightDp / 3
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(3000)
+            val nextPage = (pagerStateRm.currentPage + 1) % imgList.size
+            pagerStateRm.animateScrollToPage(
+                page = nextPage,
+                animationSpec = tween(
+                    durationMillis = 500,
+                    easing = FastOutSlowInEasing
+                )
+            )
+        }
+    }
+
+
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(heightScreen.dp)
+    ) {
+        val (pager, indicator) = createRefs()
+
+        // ✅ Thêm HorizontalPager để hiển thị ảnh
+        HorizontalPager(
+            state = pagerStateRm,
+            modifier = Modifier
+                .constrainAs(pager) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .fillMaxSize()
+        ) { page ->
+            // Hiển thị ảnh từ imgList
+            Image(
+                painter = painterResource(id = imgList[page]),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        // Indicator (nếu có)
+        indicatorBanner(
+            pagerState = pagerStateRm,
+            modifier = Modifier.constrainAs(indicator) {
+                top.linkTo(parent.top, margin = 15.dp)
+                end.linkTo(parent.end, margin = 15.dp)
+            }
+        )
+    }
+}
+
+
+
+@Composable
+fun BannerItem(icon: Int) {
+    Log.d("icons",icon.toString())
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+
+        val iconref = createRef()
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = "Image ",
+            modifier = Modifier.size(100.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        FloatingActionButton(
+            onClick = { },
+            modifier = Modifier
+                .clip(CircleShape)
+                .size(40.dp)
+                .constrainAs(iconref) {
+                    end.linkTo(parent.end, margin = 15.dp)
+                    bottom.linkTo(parent.bottom, margin = 30.dp)
+                },
+            containerColor = Color.Green
+        ) {
+            Icon(
+                imageVector = Icons.Sharp.PlayCircle,
+                contentDescription = null,
+                tint = Color.White
+            )
+        }
+    }
+
+}
+
+
+@Composable
+@Preview
+fun test() {
+
+}
