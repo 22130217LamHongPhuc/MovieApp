@@ -40,7 +40,41 @@ fun MovieTypeScreen(slug:String,type:String,
     }
 
 
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.Black),
+        contentAlignment = Alignment.Center // Canh giữa
+    ){
+        if(moviePagingItems.itemCount==0){
 
+            CircularProgressIndicator(
+                modifier = Modifier.size(30.dp),
+                strokeWidth = 3.dp,
+                color = Color.Red
+            )
+
+        }else{
+            LazyColumn (modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp)){
+                Log.d("search size",moviePagingItems.itemCount.toString())
+                item {
+                    Text(text = "Tìm kiếm cho : $slug",
+                        style = MaterialTheme.typography.titleMedium.copy(color = Color.White, fontWeight = FontWeight.Bold))
+                }
+                items(moviePagingItems.itemCount) {
+
+                        index -> moviePagingItems[index]?.let {
+                    Log.d("search","index $index")
+
+                    CardMovieSearch(movie = it, navController = navController)
+                }
+                }
+
+            }
+        }
+    }
 
 
 }
