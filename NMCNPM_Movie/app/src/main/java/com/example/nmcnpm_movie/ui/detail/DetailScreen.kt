@@ -364,3 +364,52 @@ fun DetailMovieScreen(slug: String,id:String ,
 
     }
 }
+
+
+@Composable
+fun bottomViewDetail(modifier: Modifier,clickComment :() -> Unit,clickFavorite: () -> Unit,isFavorite : Boolean) {
+
+    Row(modifier = modifier
+        .background(Color.DarkGray)
+        .padding(10.dp)
+        .fillMaxWidth()
+        .wrapContentHeight()) {
+        Spacer(modifier = Modifier.width(5.dp))
+
+        // 4.1.25 Người dùng chọn vào icon bình luận ở góc dưới cùng của chi tiết phim
+        Icon(imageVector = Icons.Default.Comment, contentDescription = null,tint = Color.White,
+            modifier = Modifier
+                .size(45.dp)
+                .clickable {
+                    clickComment()
+                })
+        Spacer(modifier = Modifier.width(10.dp))
+
+
+
+        Icon(imageVector = Icons.Default.Favorite, contentDescription = null,
+            modifier = Modifier
+                .size(45.dp).
+                let {
+                    if (!isFavorite) {
+                        it.clickable {
+                            clickFavorite()
+                        }
+                    } else {
+                        it
+                    }
+                },
+            tint = if (isFavorite) Color.Red else Color.White,
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Button(onClick = {}, colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Red
+        ),
+            modifier =  Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Xem ngay",style = MaterialTheme.typography.bodyLarge.copy(Color.White))
+        }
+
+    }
+}
