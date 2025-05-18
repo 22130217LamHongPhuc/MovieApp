@@ -320,3 +320,196 @@ fun BoxRefresh() {
 
 
 }
+
+@Composable
+fun BottomAppbar(pageCurrent: Int, changeTab: (Int) -> Unit) {
+
+    BottomAppBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        containerColor = Color.Black
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+        ) {
+            var selectedIndex by remember { mutableStateOf(0) }
+
+            selectedIndex = pageCurrent
+
+            val icons by remember {
+                mutableStateOf(
+                    listOf(
+                        Icons.Default.Home,
+                        Icons.Default.Search,
+                        Icons.Default.ChatBubbleOutline,
+                        Icons.Default.Person
+                    )
+                )
+            }
+
+            icons.forEachIndexed { index, icon ->
+
+                IconButton(
+                    onClick = {
+                        selectedIndex = index
+                        changeTab(index)
+                    },
+                    modifier = Modifier
+                        .padding(5.dp)
+                ) {
+                    val color = if (index == selectedIndex) Color.Gray else Color.White
+                    Icon(imageVector = icon, contentDescription = "tab_$index", tint = color)
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MovieHomes(state: HomeUiState, modifier: Modifier, navController: NavController) {
+
+    Log.d("ffff", "movies")
+
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = Color.Black)
+    ) {
+
+        Log.d("ffff", "size ${state.latestMovies.size}")
+
+        if (state.latestMovies.isNotEmpty()) {
+
+            val listRecommenMovie by remember {
+                mutableStateOf(state.latestMovies.take(23).drop(17))
+            }
+            MovieList(
+                latestMovies = state.latestMovies,
+                label = "Phim mới cập nhật",
+                navController = navController
+            )
+
+            MovieList(listRecommenMovie, "Đề xuất cho bạn", navController)
+        }
+
+
+        if (state.cartoonMovies.isNotEmpty()) {
+            MovieList2(state.cartoonMovies, "Phim hoạt hình", navController)
+        }
+
+//        if (state.seriesMovies.isNotEmpty()) {
+//            MovieList2(state.seriesMovies, "Phim bộ",navController)
+//        }
+//
+//
+//        if (state.oddMovies.isNotEmpty()) {
+//            MovieList2(state.oddMovies, "Phim lẻ",navController)
+//        }
+//
+//
+//        if (state.tvShowMovies.isNotEmpty()) {
+//            MovieList2(state.tvShowMovies, "Tv shows",navController)
+//        }
+
+
+    }
+}
+
+@Composable
+fun MovieList2(latestMovies: List<MovieSearch>, label: String, navController: NavController) {
+
+    Log.d("ffff", "$label")
+
+    val heightScreen = LocalConfiguration.current.screenHeightDp / 2
+
+    Column(
+        modifier = Modifier
+            .padding(top = 15.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(Color.Black)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif
+            ),
+            modifier = Modifier.padding(start = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(3.dp))
+
+        LazyHorizontalGrid(
+            rows = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(8.dp)
+
+        ) {
+            items(
+                count = latestMovies.size,
+                key = { index -> latestMovies.get(index).id }) { index ->
+                CardMovieBasic(movie = latestMovies.get(index), navController)
+            }
+        }
+    }
+
+}
+
+
+@Composable
+fun MovieList(latestMovies: List<Movie>, label: String, navController: NavController) {
+
+    Log.d("ffff", "movieLastest")
+
+    val heightScreen = LocalConfiguration.current.screenHeightDp / 2
+
+
+    Column(
+        modifier = Modifier
+            .padding(top = 15.dp)
+            .fillMaxWidth()
+            .background(Color.Black)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif
+            ),
+            modifier = Modifier.padding(start = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(calculateGridHeight(2)),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(8.dp)
+
+        ) {
+            items(count = 6, key = { index -> latestMovies.get(index).id }) { index ->
+
+                CardMovieBasic(movie = latestMovies.get(index), navController)
+            }
+        }
+    }
+
+}
+
