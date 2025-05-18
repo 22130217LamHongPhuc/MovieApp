@@ -776,6 +776,101 @@ fun BannerItem(icon: Int) {
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun VoiceSearchScreen(cancel: () -> Unit, searchScreen: (String) -> Unit) {
+    val context = LocalContext.current
+
+
+    // Tạo activity result launcher
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract =
+            ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val results = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            searchScreen(results?.get(0) ?: "")
+        } else {
+            cancel()
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            startVoiceRecognition(context, speechRecognizerLauncher)
+        } else {
+            Toast.makeText(
+                context,
+                "Cần quyền microphone để sử dụng tính năng này",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(0xFF111111).copy(alpha = 0.8f)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = {
+                when {
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.RECORD_AUDIO
+                    ) == PackageManager.PERMISSION_GRANTED -> {
+                        startVoiceRecognition(context, speechRecognizerLauncher)
+                    }
+
+                    else -> {
+                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                }
+            }, colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xff053B50),
+                contentColor = Color.White
+            )
+
+        ) {
+            Icon(Icons.Default.Mic, contentDescription = "Mic")
+            Text("Nhấn để nói")
+        }
+
+
+    }
+}
+
+fun startVoiceRecognition(
+    context: Context,
+    launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
+) {
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+        != PackageManager.PERMISSION_GRANTED
+    ) {
+
+        return
+    }
+
+    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói tên phim bạn muốn tìm kiếm")
+    }
+
+    try {
+        launcher.launch(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
+    }
+}
+
+
 @Composable
 @Preview
 fun test() {
