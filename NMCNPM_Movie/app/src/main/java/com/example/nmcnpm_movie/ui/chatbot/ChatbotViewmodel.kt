@@ -27,11 +27,13 @@ import kotlinx.coroutines.launch
     private var currentChatContext: String? = systemPrompt
 
     fun chatBox(userPrompt: String) {
+        // 6.1.9 chuyen _idloading sang trang thai loading
         _isLoading.value = true
 
         viewModelScope.launch {
             val apiKey = "AIzaSyAysjC2YrWywFVuvczvQFyYT4ISpaxtvNA"
 
+            // 6.1.11 khoi tao model
             val generativeModel = GenerativeModel(
                 modelName = "gemini-1.5-flash",
                 apiKey = apiKey,
@@ -50,23 +52,19 @@ import kotlinx.coroutines.launch
                 Câu hỏi mới của người dùng: $userPrompt
             """.trimIndent()
 
-            try {
+
+                // 6.1.13 goi ham generateContent(fullPrompt)
                 val response = generativeModel.generateContent(fullPrompt)
 
+                // 6.1.14 nhan du lieu tra ve từ reponse
+
+                // 6.1.15 cap nhat du lieu cho _chat
                 _chat.update { list ->
                     list + Message("Chatbot", response.text ?: "Không thể tạo phản hồi")
                 }
 
                 Log.d("chatbot", response.text ?: "Không thể tạo phản hồi")
-            } catch (e: Exception) {
-                _chat.update { list ->
-                    list + Message("User", userPrompt) +
-                            Message("Chatbot", "Đã xảy ra lỗi: ${e.localizedMessage}")
-                }
-                Log.e("chatbot", "Error: ${e.message}")
-            } finally {
-                _isLoading.value = false
-            }
+
         }
     }
 
@@ -75,6 +73,7 @@ import kotlinx.coroutines.launch
             list + message
         }
         Log.d("chatbot", _chat.value.toString())
+        //6.1.9 goi ham chatbox
         chatBox(message.text)
     }
 

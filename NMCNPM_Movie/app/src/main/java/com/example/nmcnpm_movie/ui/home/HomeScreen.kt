@@ -205,7 +205,7 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
                     }
                     2 -> saveableStateHolder.SaveableStateProvider("profile") {
 
-
+                        // truy cap vao chatbotscreen
                         saveableStateHolder.SaveableStateProvider("chatbot") {
                             ChatbotScreen()
                         }

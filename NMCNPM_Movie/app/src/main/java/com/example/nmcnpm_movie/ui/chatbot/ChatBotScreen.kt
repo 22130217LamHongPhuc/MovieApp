@@ -52,6 +52,7 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ChatbotScreen(vm: ChatbotViewmodel = hiltViewModel()) {
+    // 6.3 khoi tao viewmodel
     val messages by vm.chat.collectAsState()
     val isLoading by vm.isLoading.collectAsState()
     val state = rememberLazyListState()
@@ -63,7 +64,7 @@ fun ChatbotScreen(vm: ChatbotViewmodel = hiltViewModel()) {
         composition,
         iterations = LottieConstants.IterateForever
     )
-
+    // 6.4 khoi tao giao dien chatbot
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,10 +88,13 @@ fun ChatbotScreen(vm: ChatbotViewmodel = hiltViewModel()) {
                 .fillMaxWidth(),
             state = state
         ) {
+            // 6.1.16 he thong cap nhat hien thi giao dien bao gom danh sach cac tin nhan
+            // 6.2.16 hien thị giao dien dang sach tin nhan bao gom tin nhan khong the phan hoi
             items(messages,key = { it.text}) { message ->
                 ChatMessageBubble(message)
             }
             if(isLoading){
+                // 6.9 chuyen sang trang thai loading
                 item{
                     AnimatedDots()
                 }
@@ -111,6 +115,9 @@ fun ChatbotScreen(vm: ChatbotViewmodel = hiltViewModel()) {
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 6.5 chon vao o nhap tin nhan
+            // 6.6 nhap thong tin vao o nhap tin nhan
+            // 6.7 nhan nut gui
             TextField(
                 value = input,
                 onValueChange = { input = it },
@@ -133,6 +140,7 @@ fun ChatbotScreen(vm: ChatbotViewmodel = hiltViewModel()) {
             )
             IconButton(onClick = {
                 if (input.isNotBlank()) {
+                    // 6.1.8 hệ thống thực hiện gọi hàm addmessageofuser trong viewmodel
                     vm.addMessageOfUser(Message("You",input))
                     input = ""
                     keyBoardController?.hide()
