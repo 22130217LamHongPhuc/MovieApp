@@ -115,3 +115,20 @@ fun ProfileScreen(navController:NavController){
         }
     }
 }
+
+@Composable
+fun itemProfile(icon: ImageVector,title: String,onclick:()->Unit){
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(24.dp)
+        .clickable {
+            onclick()
+        }) {
+        Icon(imageVector =icon , contentDescription =null,tint= Color.White )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(text = title,style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+        Spacer(modifier = Modifier.height(10.dp))
+
+
+    }
+}
