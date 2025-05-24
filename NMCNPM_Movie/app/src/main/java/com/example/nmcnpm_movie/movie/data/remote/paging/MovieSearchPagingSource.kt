@@ -32,6 +32,12 @@ class MovieSearchPagingSource(
             Log.d("ssss", movieDto?.data?.breadCrumb?.get(0)?.name ?: "noo")
             val movieSearch = apiMapperImpl.mapToDomain(movieDto)
             Log.d("ssss", movieDto.toString())
+            // 8.1.16. Nhận dữ liệu trả về từ api gán cho LoadResult
+            LoadResult.Page(
+                data = movieSearch,
+                prevKey = if (currentPage == 1) null else currentPage - 1,
+                nextKey = if (movieSearch.isEmpty()) null else currentPage + 1
+            )
         } catch (e: Exception) {
             Log.d("ssss", e.message.toString())
             LoadResult.Error(e)
