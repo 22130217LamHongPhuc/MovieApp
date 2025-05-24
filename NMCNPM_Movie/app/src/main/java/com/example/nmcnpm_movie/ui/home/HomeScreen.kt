@@ -123,9 +123,12 @@ import com.google.accompanist.placeholder.shimmer
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-
-
-fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavController, navController_child: NavHostController) {
+// 8.1.1. nguoi dung truy cap vao trang MainScreen
+fun MainScreen(
+    viewModel: HomeViewModel = hiltViewModel(), // 8.1.3. Khởi tạo ViewModel
+    navController: NavController,
+    navController_child: NavHostController
+) {
 
     // 4.1.0 Người dùng thực hiện truy cập vào trang MainScreen
     // 4.1.1 Khởi tạo giao diện trang MainScreen
@@ -133,7 +136,6 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
         // 4.1.2 Hệ thống thực hiện gọi phương thức getDataHomeMovie() trong HomeViewModel
         viewModel.getDataHomeMovie()
     }
-
 
 
     val statePager = rememberPagerState(0) {
@@ -154,11 +156,13 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
     val window = context.window
 
 
-
     val saveableStateHolder = rememberSaveableStateHolder()
 
 
-    Log.d("NavController", "Current route: ${navController.currentBackStackEntry?.destination?.route}")
+    Log.d(
+        "NavController",
+        "Current route: ${navController.currentBackStackEntry?.destination?.route}"
+    )
     LaunchedEffect(currentRoute) {
         selectedTab.intValue = when (currentRoute) {
             "home_child" -> 0
@@ -168,31 +172,32 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
             else -> 0
         }
     }
+    // 8.1.2 khoi tao giao dien MainScreen
     Scaffold(
         modifier = Modifier.background(Color.Black),
         bottomBar = {
-            BottomAppbar(selectedTab.intValue){
-                    selectedIndex ->
+            BottomAppbar(selectedTab.intValue) { selectedIndex ->
                 scope.launch {
                     statePager.animateScrollToPage(selectedIndex)
                 }
 
             }
         }, containerColor = Color.Black
-    ) {
-            paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .padding(paddingValues)){
-            HorizontalPager(state = statePager, modifier = Modifier.fillMaxSize(),
-                key = {
-                        index ->  index.hashCode()
-                }
-                ,
-                beyondBoundsPageCount = 1) {
-                    page ->
-                when(page){
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(paddingValues)
+        ) {
+            HorizontalPager(
+                state = statePager, modifier = Modifier.fillMaxSize(),
+                key = { index ->
+                    index.hashCode()
+                },
+                beyondBoundsPageCount = 1
+            ) { page ->
+                when (page) {
                     0 -> saveableStateHolder.SaveableStateProvider("home") {
 
 
@@ -200,9 +205,11 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
                             navController.navigate("compile_type/$slugType")
                         }
                     }
-                    1 ->  TypeMovieScreen(navController) { type, slug ->
+
+                    1 -> TypeMovieScreen(navController) { type, slug ->
                         navController.navigate("movie_type/$type/$slug")
                     }
+
                     2 -> saveableStateHolder.SaveableStateProvider("profile") {
 
                         // truy cap vao chatbotscreen
@@ -210,7 +217,8 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
                             ChatbotScreen()
                         }
                     }
-                    3 ->saveableStateHolder.SaveableStateProvider(key = "type") {
+
+                    3 -> saveableStateHolder.SaveableStateProvider(key = "type") {
                         ProfileScreen(navController)
                     }
                 }
@@ -222,7 +230,11 @@ fun MainScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavCon
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Home(viewModel: HomeViewModel = hiltViewModel(),navController: NavController,onChange: (String) -> Unit){
+fun Home(
+    viewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController,
+    onChange: (String) -> Unit
+) {
 
     val listImg = remember {
         listOf(R.drawable.img_2, R.drawable.img_3, R.drawable.img_4, R.drawable.img_5)
@@ -233,7 +245,7 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(),navController: NavController
     val errorMessage = uiState.errorMessage
     val movies by remember { derivedStateOf { uiState } }
 
-    if(isLoading){
+    if (isLoading) {
         // 4.1.4 Hiển thị giao diện trạng thái đang loading
 
         Box(
@@ -256,13 +268,14 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(),navController: NavController
                 TopAppBar(onChange = onChange,
                     moveToVoice = {
                         navController.navigate("voice")
-                    }, onSearchMovie =  { query ->
-                        // 1.6 chuyen sang man hinh Search_MovieScreen
-                        navController.navigate("search_movie/$query") })
+                    }, onSearchMovie = { query ->
+                        // 8.1.8. điều hướng để chuyển sang màn hình MovieSearchScreen
+                        navController.navigate("search_movie/$query")
+                    })
             }
 
             item(key = "banner1") {
-                MovieBanner(imgList = listImg,Modifier)
+                MovieBanner(imgList = listImg, Modifier)
             }
 
             when {
@@ -303,20 +316,20 @@ fun BoxRefresh() {
 
     ) {
         items(count = 6, key = { index -> index.hashCode() }) { index ->
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(heightScreen)
-                .background(color = Color.Transparent, shape = RoundedCornerShape(25.dp))
-                .clip(shape = RoundedCornerShape(25.dp))
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White), // Shimmer sáng
-                    color = Color.Gray // Màu placeholder sáng hơn trên nền đen
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(heightScreen)
+                    .background(color = Color.Transparent, shape = RoundedCornerShape(25.dp))
+                    .clip(shape = RoundedCornerShape(25.dp))
+                    .placeholder(
+                        visible = true,
+                        highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White), // Shimmer sáng
+                        color = Color.Gray // Màu placeholder sáng hơn trên nền đen
+                    )
             )
         }
     }
-
 
 
 }
@@ -560,6 +573,7 @@ fun TopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
+// 8.1.4. Khởi tạo giao diện thanh tìm kiếm phim
 fun SearchTopBar(
     search: String,
     onChange: (String) -> Unit,
@@ -567,11 +581,7 @@ fun SearchTopBar(
     moveToVoice: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-
-
-    //1.3 khoi tao TextField
-    //1.4 nhap thong tin tim kiem phim
-
+    // 8.1.5. chọn ô nhập tìm kiếm trên cùng màn hình
     TextField(
         value = search,
         onValueChange = onChange,
@@ -580,12 +590,12 @@ fun SearchTopBar(
             .padding(0.dp)
             .clip(RoundedCornerShape(25.dp)),
         textStyle = TextStyle.Default.copy(color = Color(0xFFBFCECC)),
-
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color(0xff264653),
             focusedTextColor = Color(0xFFBFCECC),
             unfocusedTextColor = Color(0xFFBFCECC)
         ),
+        // 8.1.6. Người dùng nhập nội dung vào ô tìm kiếm
         placeholder = {
             Text(
                 text = "Nhập phim cần tìm",
@@ -603,20 +613,16 @@ fun SearchTopBar(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
-
                 if (search.trim().isNotEmpty()) {
-                    onSearchMovie(search.trim())
+                    onSearchMovie(search.trim()) // 8.1.7. Người dùng nhấn "Done" --> gọi hàm thực hiện tìm kiếm
                 }
                 keyboardController.let {
-                    it?.hide()
+                    it?.hide()   //8.2.1. Nếu người dùng không nhập gì mà tìm kiếm gì ẩn bàn phím
                 }
-
                 onChange("")
-
-
             }
         ),
-        singleLine = true // Đảm bảo nhập 1 dòng, tránh tự động gọi hàm
+        singleLine = true
 
     )
 
@@ -736,10 +742,9 @@ fun MovieBanner(imgList: List<Int>, modifier: Modifier) {
 }
 
 
-
 @Composable
 fun BannerItem(icon: Int) {
-    Log.d("icons",icon.toString())
+    Log.d("icons", icon.toString())
 
     ConstraintLayout(
         modifier = Modifier
@@ -785,7 +790,7 @@ fun VoiceSearchScreen(cancel: () -> Unit, searchScreen: (String) -> Unit) {
     // Tạo activity result launcher
     val speechRecognizerLauncher = rememberLauncherForActivityResult(
         contract =
-            ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val results = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
