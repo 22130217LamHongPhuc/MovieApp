@@ -25,8 +25,19 @@ class MovieSearchViewModel @Inject constructor(val repository: MovieSearchReposi
     private val _searchQuery = MutableStateFlow("")
     val searchMoviePagingFlow = _searchQuery
         .flatMapLatest { query ->
-            Log.d("search",query+"1")
+            Log.d("search", query + "1")
             // 8.1.13. thực hiện gọi hàm getMoviesSearchPager trong MovieSearchRepository
             repository.getMoviesSearchPager(query).cachedIn(viewModelScope)
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
+
+    //  8.1.17. nhận dữ liệu trả về từ MovieSearchRepository, thực hiện gán lại gia trị cho searchMoviePagingFlow
+    fun setQuery(query: String) {
+        Log.d("searcc", query + "start")
+        if (_searchQuery.value != query) {
+            // 8.1.12. thực hiện gán query cho _searchQuery
+            _searchQuery.value = query
+            Log.d("searcc", query)
+        }
+    }
+}
