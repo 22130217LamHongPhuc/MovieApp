@@ -20,4 +20,21 @@ class MovieSearchPagingSource(
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieSearch> {
+        return try {
+            Log.d("search", "query " + keyword)
+            val currentPage = params.key ?: 1
+            Log.d("pagee", "query " + currentPage.toString())
+
+            // 8.1.15. goi phuong thuc searchMovie đến https://kkphim.vip/ để lấy dữ liệu phim
+            val movieDto = apiService.searchMovie(keyword, currentPage)
+            Log.d("ssss", movieDto?.data?.breadCrumb?.get(0)?.name ?: "noo")
+            val movieSearch = apiMapperImpl.mapToDomain(movieDto)
+            Log.d("ssss", movieDto.toString())
+        } catch (e: Exception) {
+            Log.d("ssss", e.message.toString())
+            LoadResult.Error(e)
+        }
+    }
 }
