@@ -18,7 +18,7 @@ class MovieSearchRepository(
 ) {
     fun getMoviesSearchPager(keyword: String): Flow<PagingData<MovieSearch>> {
         Log.d("search", "query" + "2")
-        // 8.1.10. khoi tao Pager()
+        // 8.1.14. khoi tao Pager()
         return Pager(
             config = PagingConfig(pageSize = 24, enablePlaceholders = false),
             pagingSourceFactory = {
