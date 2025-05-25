@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "472172044602",
+    "project_id": "firsbasestoreage",
+    "storage_bucket": "firsbasestoreage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472172044602:android:bef3debc66fcc6aca03003",
+        "android_client_info": {
+          "package_name": "com.example.movie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJV6efLh9rXVxzNBFfhOUAUAuaD2HrJHI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

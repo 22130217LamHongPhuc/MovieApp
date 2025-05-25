@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Movie App</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_main">Movie App</string>
+
+    <string name="facebook_app_id">9651907091570557</string>
+    <string name="fb_login_protocol_scheme">fb9651907091570557</string>
+    <string name="facebook_client_token">7ccfef8eecb50cf8cefc95547c108e74</string>
+
+
+</resources>
